@@ -1,19 +1,23 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
+import InfiniteScroll from 'react-infinite-scroller';
 
 import './Subreddit.scss';
 
 const Subreddit = (props: any) => {
-  const { data } = props;
+  const data = props.data?.children || [];
+  const [subRedditPostsState, setSubRedditPosts] = useState([]);
+  const [subRedditResponse, setSubRedditResponse] = useState(props.data);
+  const subredditName: string = data.length ? data[0].data.subreddit_name_prefixed : '';
 
   const checkForExtension = (url: string) => {
     return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
   }
 
-  const getsubRedditPosts = () => {
+  const getSubRedditPosts = (children) => {
     const subRedditPosts = [];
-    props.data.forEach((post) => {
+    children.forEach((post) => {
       const { url, title, author, selftext } :
       { url: string, title: string, author: string, selftext: string } = post.data;
       let media;
@@ -49,17 +53,41 @@ const Subreddit = (props: any) => {
     return subRedditPosts
   }
   
-  const subRedditPosts = getsubRedditPosts();
+  const fetchMore = () => {
+    fetch(`https://www.reddit.com/${subredditName}/new.json?limit=50&after=${subRedditResponse?.data?.after || props?.data?.after || ''}.json`)
+    .then(response => response.json())
+    .then(body => {
+      setSubRedditPosts([...subRedditPostsState, getSubRedditPosts(body.data?.children)]);
+      setSubRedditResponse(body.data);
+    })
+    .catch(error => {
+      return error;
+    });
+  }
+
+  const subRedditPosts = getSubRedditPosts(data);
   return (
     <>
-    <Header className='SubredditHeader' description={data.length ? data[0].data.subreddit_name_prefixed : ''} >
-      <div className='title'>{data.length ? data[0].data.subreddit : undefined}</div>
-    </Header>
-      <Container className='SubredditContainer'>
-        {subRedditPosts}
-      </Container>
+      <Header className='SubredditHeader' description={subredditName} >
+        <div className='title'>{data.length ? data[0].data.subreddit : undefined}</div>
+      </Header>
+      <div className="overflow">
+        <InfiniteScroll
+          className="InfiniteScroll"
+          pageStart={0}
+          loadMore={fetchMore}
+          hasMore={true}
+          initialLoad={false}
+          useWindow={true}
+        >
+        <Container className='SubredditContainer'>
+            {subRedditPosts}
+            {subRedditPostsState}
+          </Container>
+          </InfiniteScroll>
+      </div>
     </>
   );
-  }
+}
 
 export default Subreddit;

@@ -10,7 +10,7 @@ const SearchBar = (props: any) => {
     fetch(`https://www.reddit.com/r/${query}.json`)
     .then(response => response.json())
     .then(body => {
-      props.setData(body.data?.children)
+      props.setData(body.data)
     })
     .catch(error => {
       return error;
