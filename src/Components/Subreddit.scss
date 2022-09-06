@@ -1,0 +1,38 @@
+.Container {
+    text-align: center;
+}
+
+.SubredditContainer {
+
+    .subRedditPostContainer {
+        width: 60%;
+        margin-left: 20%;
+        margin-bottom: 2rem;
+        text-align: center;
+
+        .block {
+            text-align: center;
+
+            .image, .video {
+                height: 50%;
+                width: 60%
+            }
+        }
+    }
+
+    .Post .author {
+        font-weight: normal;
+        font-size: .75rem;
+    }
+}
+
+.SubredditHeader {
+    margin-left: 40%;
+ 
+    .prefix {
+         font-weight: normal;
+         font-size: 1rem;
+     } 
+ }
+
+

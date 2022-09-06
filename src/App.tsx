@@ -20,6 +20,7 @@ function App() {
       >
         reddit
       </Header>
+      <Subreddit data={data}/>
     </div>
   );
 }
